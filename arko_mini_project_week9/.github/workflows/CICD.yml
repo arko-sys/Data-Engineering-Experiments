@@ -1,0 +1,50 @@
+name: CICD
+
+on:
+  push:
+    branches:
+      - master
+      - main
+  pull_request:
+    branches:
+      - master
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.8'
+    
+    - name: Install dependencies
+      run: |
+        make install
+    
+    - name: Run tests
+      run: |
+        make format lint test
+
+    - name: Run data analysis
+      run: |
+        venv/bin/python scripts/generate_md.py
+
+    - name: Commit and push report.md
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add report.md
+        git commit -m "Add generated Markdown report"
+        git push
+
+    - name: Upload report as artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: data-report
+        path: report.md

@@ -1,0 +1,10 @@
+black
+click
+dbutils
+pandas
+pyspark
+pytest
+pytest-cov
+requests
+ruff
+tabulate
